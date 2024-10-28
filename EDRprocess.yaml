@@ -1,5 +1,5 @@
 name: EDRSilencer Process Detetcion
-description: 'This query looks for creation, modification and deletion of EDR process on Endpoint.'
+description: 'This query looks for creation, modification and deletion of EDR process on Endpoint...'
 severity: Medium
 enabled: true
 requiredDataConnectors:
