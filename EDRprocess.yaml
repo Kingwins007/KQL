@@ -1,0 +1,43 @@
+name: EDRSilencer Process Detetcion
+description: 'This query looks for creation, modification and deletion of EDR process on Endpoint'
+severity: Medium
+enabled: true
+requiredDataConnectors:
+  - connectorId: MicrosoftDefenderForEndpoint
+    dataTypes:
+     - DeviceFileEvents
+queryFrequency: 5m
+queryPeriod: 5m
+triggerOperator: gt
+triggerThreshold: 0
+tactics:
+  - Impact
+relevantTechniques:
+  - T1489
+query: |
+  SecurityEvent
+  |where EventID in (5155, 5157)
+  |extend SourceIp = column_ifexists("SourceIp", "")
+  |extend DestinationIp = column_ifexists("DestinationIp", "")
+  |extend DestinationPort = column_ifexists("DestinationPort", "")
+  |extend Protocol = column_ifexists("Protocol", "")
+  |extend Application = column_ifexists("Application", "")
+  |project TimeGenerated, Computer, EventID, SourceIp, DestinationIp, DestinationPort, Protocol, Application
+  |union (
+    DeviceFileEvents
+    | where FileName in ("EDRSilencer.exe", "8acf3311-5c3c-4473-aeab-d79967f777a0", "EDRSilencer (2).exe", "edrs.exe", "Ghatak.exe", "EDRSilencerPrueba.exe", "EDRSilencer.Eg52kjIP.exe.part" , "edrsilencer.exe") or SHA256 == "721af117726af1385c08cc6f49a801f3cf3f057d9fd26fcec2749455567888e7"
+    | where FileName == "ping.exe" and SHA256 == "721af117726af1385c08cc6f49a801f3cf3f057d9fd26fcec2749455567888e7"
+    | project TimeGenerated, DeviceName, FileName, SHA256
+    )
+entityMappings:
+  - entityType: FileHash
+    fieldMappings:
+      - identifier: Value
+        columnName: SHA256
+  - entityType: Host
+    fieldMappings:
+      - identifier: HostName
+        columnName: DeviceName
+        
+version: 1.0.0
+kind: Scheduled
