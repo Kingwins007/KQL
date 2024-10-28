@@ -10,7 +10,7 @@
         {
             "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/5388ee20-e357-4b1a-b07b-366bcbec27c0')]",
             "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/5388ee20-e357-4b1a-b07b-366bcbec27c0')]",
-            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRuless",
             "kind": "Scheduled",
             "apiVersion": "2023-12-01-preview",
             "properties": {
