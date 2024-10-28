@@ -1,0 +1,79 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspace": {
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspace'), 'Microsoft.SecurityInsights'),'/alertRules/12c47155-a8b2-4466-a358-270d6ddde214')]",
+            "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/12c47155-a8b2-4466-a358-270d6ddde214')]",
+            "type": "Microsoft.OperationalInsights/workspaces/providers/alertRules",
+            "kind": "Scheduled",
+            "apiVersion": "2023-12-01-preview",
+            "properties": {
+                "displayName": "EDRSilencer Defense Evasion",
+                "description": "This Rule Detects EDRSilencer which deactivates Endpoint protection, Antivirus, and disables Alert Trigger",
+                "severity": "Medium",
+                "enabled": false,
+                "query": "DeviceFileEvents\r\n| where FileName in (\"EDRSilencer.exe\", \"8acf3311-5c3c-4473-aeab-d79967f777a0\", \"EDRSilencer (2).exe\", \"edrs.exe\", \"Ghatak.exe\", \"EDRSilencerPrueba.exe\", \"EDRSilencer.Eg52kjIP.exe.part\" , \"edrsilencer.exe\") or SHA256 == \"721af117726af1385c08cc6f49a801f3cf3f057d9fd26fcec2749455567888e7\"\r\n| where FileName == \"ping.exe\" and SHA256 == \"721af117726af1385c08cc6f49a801f3cf3f057d9fd26fcec2749455567888e7\"\r\n| project Timestamp, DeviceName, FileName, SHA256",
+                "queryFrequency": "PT1H",
+                "queryPeriod": "PT1H",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "suppressionDuration": "PT5H",
+                "suppressionEnabled": false,
+                "startTimeUtc": null,
+                "tactics": [
+                    "Evasion",
+                    "DefenseEvasion",
+                    "Persistence"
+                ],
+                "techniques": [],
+                "subTechniques": [],
+                "alertRuleTemplateName": null,
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "reopenClosedIncident": false,
+                        "lookbackDuration": "PT1H",
+                        "matchingMethod": "AllEntities",
+                        "groupByEntities": [],
+                        "groupByAlertDetails": [],
+                        "groupByCustomDetails": []
+                    }
+                },
+                "eventGroupingSettings": {
+                    "aggregationKind": "SingleAlert"
+                },
+                "alertDetailsOverride": null,
+                "customDetails": {},
+                "entityMappings": [
+                    {
+                        "entityType": "FileHash",
+                        "fieldMappings": [
+                            {
+                                "identifier": "Value",
+                                "columnName": "SHA256"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "identifier": "HostName",
+                                "columnName": "DeviceName"
+                            }
+                        ]
+                    }
+                ],
+                "sentinelEntitiesMappings": null,
+                "templateVersion": null
+            }
+        }
+    ]
+}
